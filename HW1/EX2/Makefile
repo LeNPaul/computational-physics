@@ -1,5 +1,5 @@
-pi: pi.o
-	icc -O0 pi.o -o pi
+root: root.o
+	icc -O0 root.o -o root
 
-pi.o: pi.c
-	icc -O0 pi.c -c
+root.o: root.c
+	icc -O0 root.c -c
