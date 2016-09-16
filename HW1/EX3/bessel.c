@@ -11,15 +11,14 @@ int main()
 
     int i, temp;
 
-    for(i = 0; i <= 20; ++i){
+    for(i = 2; i <= 20; ++i){
         j = 2 * n * j1/ x - j0;
 
-        temp = j1;
+        j0 = j1;
         j1 = j;
-        j0 = temp;
     }
 
     printf("%f \n", j);
 
     return j;
-}
+} 
