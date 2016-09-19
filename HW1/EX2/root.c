@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 float Sq_Tlr(float x)
 {
@@ -44,8 +45,16 @@ float Sq_Frc(float x)
 
 int main()
 {
+	clock_t begin_time = clock();	
+
 	float taylor = Sq_Tlr(1.5);
 	printf("Using Taylor Series: %f \n" , taylor);
+
+	clock_t end_time = clock();
+
+	float elapsed_secs = (end_time - begin_time) / CLOCKS_PER_SEC;
+
+	printf("Elapsed time from clock: %f \n", elapsed_secs);
 
 	float newton = Sq_Nwt(1.5);
 	printf("Using Newton's Method: %f \n" , newton);
