@@ -37,6 +37,7 @@ float Sq_Frc(float x)
 	int a = 1;
 
 	float root =  a + (x - a*a) / (2*a + (x - a*a)/(2*a + (x - a*a)/(2*a + (x - a*a)/(2*a + (x - a*a)/(2*a + (x - a*a)/(2*a) + (x - a*a)/(2*a))))));
+	// Look at http://www.maths.surrey.ac.uk/hosted-sites/R.Knott/Fibonacci/cfINTRO.html
 
 	return root;
 }
