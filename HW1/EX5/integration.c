@@ -11,20 +11,23 @@ int main()
 {
 
 	int i;
-	int n = 20;
-	float f1, f2, dx, xl, xh, integral;
+	int n = 64;
+	float xl = 0;
+	float xh = 1;
 
 	//Find interval size
-	dx = (xh - xl) / n;
-	
-	float trapArea = (f1 + f2) * dx / 2;
+	float dx = (xh - xl) / n;
 
-	for(i = 0; i <= n; ++i){
-		integral += myfunc(i);
+    //Calculate end points
+    float integral = dx * (myfunc(xh) + myfunc(xl)) / 2;
+
+	for(i = 1; i <= n - 1; ++i){
+        xl += dx;
+		integral += dx * myfunc(xl);
 	}
-	
+
 	printf("%f", integral);
 
 	return integral;
 
-} 
+}
