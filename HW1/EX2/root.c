@@ -23,7 +23,7 @@ int main()
         square = sqrt(x);
     }
 	clock_t toc = clock();
-	printf("Elapsed: %f \n", (double)(toc - tic)/ CLOCKS_PER_SEC);
+	printf("Elapsed time: %f \n", (double)(toc - tic)/ CLOCKS_PER_SEC);
 
     //Calculating the square root using the Taylor series
 	float taylor = Sq_Tlr(x);
@@ -45,6 +45,10 @@ int main()
 	float newton = Sq_Nwt(x);
 	printf("Using Newton's Method: %f \n" , newton);
 
+    //Calculating the error
+    error = fabs(square - newton);
+	printf("The error in this value is: %f \n" , error);
+
 	tic = clock();
     for(i=0; i < 1000000; i++)
     {
@@ -53,12 +57,12 @@ int main()
 	toc = clock();
 	printf("Elapsed time: %f \n", (double)(toc - tic)/ CLOCKS_PER_SEC);
 
-    //Calculating the error
-    error = fabs(square - newton);
-	printf("The error in this value is: %f \n" , error);
-
 	float fraction = Sq_Frc(x);
 	printf("Using Continued Fractions: %f \n" , fraction);
+
+    //Calculating the error
+    error = fabs(square - fraction);
+	printf("The error in this value is: %f \n" , error);
 
 	tic = clock();
 
@@ -70,10 +74,6 @@ int main()
 	toc = clock();
 
 	printf("Elapsed time: %f \n", (double)(toc - tic)/ CLOCKS_PER_SEC);
-
-    //Calculating the error
-    error = fabs(square - fraction);
-	printf("The error in this value is: %f \n" , error);
 
 }
 //Calculate error between actual value and estimated value
