@@ -27,6 +27,10 @@ int main()
 	cin >> N;
 
 	//Calling the Monte Carlo integration functions
-	cout<< simpleMonte(a, b, N) <<endl;
+	cout<< "The integral using simple Monte Carlo integration is " << simpleMonte(a, b, N) <<endl;
+
+	cout<< "The integral using sample Monte Carlo integration is " << sampleMonte(a, b, N) <<endl;
+
+	return 0;
 
 }
