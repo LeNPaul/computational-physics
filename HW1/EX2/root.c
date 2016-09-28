@@ -42,6 +42,7 @@ int main()
 	toc = clock();
 	printf("Elapsed time: %f \n", (double)(toc - tic)/ CLOCKS_PER_SEC);
 
+	//Calculating the square root using Newton's method
 	float newton = Sq_Nwt(x);
 	printf("Using Newton's Method: %f \n" , newton);
 
@@ -49,6 +50,7 @@ int main()
     error = fabs(square - newton);
 	printf("The error in this value is: %f \n" , error);
 
+	//Determine the time that this function takes
 	tic = clock();
     for(i=0; i < 1000000; i++)
     {
@@ -57,6 +59,7 @@ int main()
 	toc = clock();
 	printf("Elapsed time: %f \n", (double)(toc - tic)/ CLOCKS_PER_SEC);
 
+	//Calculating the square root using continued fractions
 	float fraction = Sq_Frc(x);
 	printf("Using Continued Fractions: %f \n" , fraction);
 
@@ -64,16 +67,12 @@ int main()
     error = fabs(square - fraction);
 	printf("The error in this value is: %f \n" , error);
 
+	//Determine the time that this function takes
 	tic = clock();
-
     for(i=0; i < 1000000; i++)
     {
         fraction = Sq_Frc(x);
     }
-
 	toc = clock();
-
 	printf("Elapsed time: %f \n", (double)(toc - tic)/ CLOCKS_PER_SEC);
-
 }
-//Calculate error between actual value and estimated value

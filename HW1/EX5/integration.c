@@ -1,33 +1,18 @@
 #include <stdio.h>
-
-double myfunc(double x)
-{
-	double r;
-	r = 4.0 / (1 + x * x);
-	return r;
-}
+#include <math.h>
+#include "integrationFunctions.h"
 
 int main()
 {
 
-	int i;
-	int n = 64;
-	float xl = 0;
-	float xh = 1;
+	double pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
 
-	//Find interval size
-	float dx = (xh - xl) / n;
+	double trap = trapazoid();
 
-    //Calculate end points
-    float integral = dx * (myfunc(xh) + myfunc(xl)) / 2;
+	double error = fabs(pi - trap);
 
-	for(i = 1; i <= n - 1; ++i){
-        xl += dx;
-		integral += dx * myfunc(xl);
-	}
+	printf("%f \n", error);
 
-	printf("%f", integral);
-
-	return integral;
+	return 0;
 
 }

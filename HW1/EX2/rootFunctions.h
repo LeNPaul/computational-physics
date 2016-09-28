@@ -25,7 +25,7 @@ float Sq_Nwt(float x)
 
 	int i = 0;
 
-	for(i = 0; i <= 10; ++i){
+	for(i = 0; i <= 5; ++i){
 		root = (root + x/root) / 2;
 	}
 
@@ -38,7 +38,6 @@ float Sq_Frc(float x)
 	int a = 1;
 
 	float root =  a + (x - a*a) / (2*a + (x - a*a)/(2*a + (x - a*a)/(2*a + (x - a*a)/(2*a + (x - a*a)/(2*a + (x - a*a)/(2*a) + (x - a*a)/(2*a))))));
-	// Look at http://www.maths.surrey.ac.uk/hosted-sites/R.Knott/Fibonacci/cfINTRO.html
 
 	return root;
 }
