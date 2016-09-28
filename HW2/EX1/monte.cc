@@ -8,49 +8,25 @@ using namespace chrono;
 
 int main()
 {
+	//Finding the interval of integration
+	double a,b, dx;
 
-	//Pseudocode:
-	//	Take in lower and upper bounds and calculate interval
-	//	Take in number of intervals
-	//	Calculate value of function at every interval
-	//	Add all of these values together
-	//	Multiply by interval length
-	//	Divide by number of intervals
+	cout << "Enter the lower bound you wish to intergrate:" <<endl;
 
-	//Interval of integration
-	double a,b;
+	cin >> a;
 
-	cout << "Enter the lower bound you wish to intergrate: \n" <<endl;
+	cout << "Enter the upper bound you wish to intergrate:" <<endl;
+
+	cin >> b;
 
 	//Number of intervals
 	int N;
 
-	cin >> test;
+	cout<< "Enter the number of interval points you wish to use:" <<endl;
 
-	cout<< test <<endl;
+	cin >> N;
 
-
-
-	typedef high_resolution_clock myclock;
-
-	myclock::time_point beginning = myclock::now();
-
-	// obtain a seed from the timer
-
-	myclock::duration d = myclock::now() - beginning;
-
-	unsigned seed = d.count();
-
-	// define the generator
-
-	mt19937 generator(seed);
-
-	uniform_real_distribution<double> distribution(0,1.0);
-
-	for (int i=1;i<=10;i++){
-		cout<< i << " " << distribution(generator) <<endl;
-	}
-
-	cout<< function(1) <<endl;
+	//Calling the Monte Carlo integration functions
+	cout<< simpleMonte(a, b, N) <<endl;
 
 }
