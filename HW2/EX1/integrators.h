@@ -14,15 +14,20 @@ double function(double x)
 	return exp (-x*x);
 }
 
+/*
+	Implementing the simple Monte Caro Method
+*/
+
 double simpleMonte(double a, double b, int N)
 {
-	//Pseudocode:
-	//	Take in lower and upper bounds and calculate the integration interval size
-	//	Take in number of intervals
-	//	Calculate value of function at random values within interval
-	//	Add all of these values together
-	//	Multiply by interval length
-	//	Divide by number of intervals
+	/*Pseudocode:
+		Take in lower and upper bounds and calculate the integration interval size
+		Take in number of intervals
+		Calculate value of function at random values within interval
+		Add all of these values together
+		Multiply by interval length
+		Divide by number of intervals
+	*/
 
 	//Generating random numbers
 
@@ -61,12 +66,12 @@ double simpleMonte(double a, double b, int N)
 
 double g(double x)
 {
-	return (exp(1 - exp(-x))) / (exp(1) - 1);
+	return (exp(1)*(1 - exp(-x))) / (exp(1) - 1);
 }
 
 double g_inverse(double u)
 {
-	return - 1 (u - log10 * (exp(1) - 1) / (exp(1)));
+	return - log(1 - u * (exp(1) -1) / (exp(1)) );
 }
 
 double sampleMonte(double a, double b, int N)
@@ -95,7 +100,8 @@ double sampleMonte(double a, double b, int N)
 	//Evaluate the function at random points between the given interval points and add them together
 	for (int i=1;i<=N;i++){
 		//cout<< i << " " << function(distribution(generator)) <<endl;
-		sum += function(g_inverse(distribution(generator)));
+		double random = distribution(generator);
+		sum += function(g_inverse(random)) / g(g_inverse(random)) ;
 	}
 
 	return ((g(b) - g(a)) / (N-1))*sum;

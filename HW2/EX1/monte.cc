@@ -1,15 +1,12 @@
-#include <random>
-#include <chrono>
 #include <iostream>
 #include "integrators.h"
 
 using namespace std;
-using namespace chrono;
 
 int main()
 {
 	//Finding the interval of integration
-	double a,b, dx;
+	double a,b;
 
 	cout << "Enter the lower bound you wish to intergrate:" <<endl;
 
