@@ -64,14 +64,21 @@ double simpleMonte(double a, double b, int N)
 	Implementing the sample Monte Carlo Method
 */
 
-double g(double x)
+double g_weighting(double x)
+{
+	return (exp(-x)*exp(1)) / (exp(1) - 1);
+}
+
+double g_normalized(double x)
 {
 	return (exp(1)*(1 - exp(-x))) / (exp(1) - 1);
+
+	//return (exp(-x)*exp(1)) / (exp(1) - 1);
 }
 
 double g_inverse(double u)
 {
-	return - log(1 - u * (exp(1) -1) / (exp(1)) );
+	return - log(1 - u * (exp(1) - 1) / (exp(1)) );
 }
 
 double sampleMonte(double a, double b, int N)
@@ -92,7 +99,7 @@ double sampleMonte(double a, double b, int N)
 
 	mt19937 generator(seed);
 
-	uniform_real_distribution<double> distribution(g(a),g(b));
+	uniform_real_distribution<double> distribution(g_normalized(a),g_normalized(b));
 
 	//Initialize the sum of the function evaluated at random points betweent he given interval
 	double sum = 0;
@@ -101,10 +108,10 @@ double sampleMonte(double a, double b, int N)
 	for (int i=1;i<=N;i++){
 		//cout<< i << " " << function(distribution(generator)) <<endl;
 		double random = distribution(generator);
-		sum += function(g_inverse(random)) / g(g_inverse(random)) ;
+		sum += function(g_inverse(random)) / g_weighting(g_inverse(random)) ;
 	}
 
-	return ((g(b) - g(a)) / (N-1))*sum;
+	return ((g_normalized(b) - g_normalized(a)) / (N-1))*sum;
 }
 
 #endif // INTEGRATORS_H_INCLUDED
