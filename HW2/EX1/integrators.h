@@ -72,13 +72,11 @@ double g_weighting(double x)
 double g_normalized(double x)
 {
 	return (exp(1)*(1 - exp(-x))) / (exp(1) - 1);
-
-	//return (exp(-x)*exp(1)) / (exp(1) - 1);
 }
 
 double g_inverse(double u)
 {
-	return - log(1 - u * (exp(1) - 1) / (exp(1)) );
+	return (-log(1 - u * (exp(1) - 1) / (exp(1))));
 }
 
 double sampleMonte(double a, double b, int N)

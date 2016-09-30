@@ -1,10 +1,12 @@
 #include <iostream>
+#include <math.h>
 #include "integrators.h"
 
 using namespace std;
 
 int main()
 {
+
 	//Finding the interval of integration
 	double a,b;
 
@@ -24,10 +26,15 @@ int main()
 	cin >> N;
 
 	//Calling the Monte Carlo integration functions
-	cout<< "The integral using simple Monte Carlo integration is " << simpleMonte(a, b, N) <<endl;
+	double simple = simpleMonte(a, b, N);
+	double sample = sampleMonte(a, b, N);
+	double difference = fabs(simple - sample);
 
-	cout<< "The integral using sample Monte Carlo integration is " << sampleMonte(a, b, N) <<endl;
+	cout<< "The integral using simple Monte Carlo integration is " << simple <<endl;
+
+	cout<< "The integral using sample Monte Carlo integration is " << sample <<endl;
+
+	cout<< "The difference between the two methods is " << difference <<endl;
 
 	return 0;
-
 }
