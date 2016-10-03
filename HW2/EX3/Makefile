@@ -4,9 +4,9 @@ FFLAGS=-O
 LFLAGS=
 OBJECTFILES=main.o
 
-default: main
+default: random
 
-fortest: $(OBJECTFILES)
+random: $(OBJECTFILES)
 	echo "Compiling"; \
 	$(LINKER) $(LFLAGS) $(OBJECTFILES) -o $@
 
