@@ -5,8 +5,11 @@
 using namespace std;
 
 int main()
-{     unlong idum;
-      int irh[4];
+{     
+
+	unlong idum;
+      
+	int irh[4];
 
       int steps = 10;
 

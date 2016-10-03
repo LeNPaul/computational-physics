@@ -1,12 +1,12 @@
 CPP=g++
 LINKER=g++
-FFLAGS=-O
-LFLAGS=
+FFLAGS=-O -std=c++11
+LFLAGS= 
 OBJECTFILES=main.o
 
-default: random
+default: ising
 
-random: $(OBJECTFILES)
+ising: $(OBJECTFILES)
 	echo "Compiling"; \
 	$(LINKER) $(LFLAGS) $(OBJECTFILES) -o $@
 

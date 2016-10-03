@@ -13,9 +13,9 @@ random: $(OBJECTFILES)
 $(OBJECTFILES):
 	$(CPP) $(FFLAGS) $*.cc -c
 
-main.o: main.cc ranz.h
+main.o: main.cc
 
-ranz.o: ranz.cc ranz.h
+ranz.o: ranz.cc
 
 clean:
 	rm *.o
