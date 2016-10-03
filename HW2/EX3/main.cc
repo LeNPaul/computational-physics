@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <iostream>
 
+using namespace std;
+
 int main()
 {
-  return 0;
+
+	printf("testing \n");
+
+	return 0;
 }

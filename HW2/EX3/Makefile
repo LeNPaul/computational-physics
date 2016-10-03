@@ -4,7 +4,7 @@ FFLAGS=-O
 LFLAGS=
 OBJECTFILES=main.o
 
-default: ising
+default: main
 
 fortest: $(OBJECTFILES)
 	echo "Compiling"; \
