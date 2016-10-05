@@ -2,7 +2,7 @@ CPP=g++
 LINKER=g++
 FFLAGS=-O -std=c++11
 LFLAGS= 
-OBJECTFILES=main.o
+OBJECTFILES=main.o ising.o
 
 default: ising
 
@@ -14,6 +14,8 @@ $(OBJECTFILES):
 	$(CPP) $(FFLAGS) $*.cc -c
 
 main.o: main.cc
+
+ising.o: ising.cc
 
 clean:
 	rm *.o

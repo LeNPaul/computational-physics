@@ -1,16 +1,14 @@
 #include <random>
 #include <chrono>
 #include <iostream>
+#include "ising.h"
 
 using namespace std;
 using namespace chrono;
 
 /*
-https://breakingmuscle.com/olympic-weightlifting/the-free-4-week-stronger-than-ever-weightlifting-program
 https://www.t-nation.com/training/olympic-lifting-made-simple
 http://www.alltheheavylifting.com/five-online-olympic-weightlifting-beginner-programs/
-
-http://farside.ph.utexas.edu/teaching/329/lectures/node110.html
 */
 
 int main()
@@ -55,16 +53,8 @@ int main()
 	}
 
 	//Determining the energy of the system
+
+	energy(0,0,lattice);
 	
-	double totalEnergy = 0; //Setting the energy of the system
-
-
-	//How to increment so that I don't double count
-	for(i=0; i < L; i+=2){
-		for(j=0; j < L; j+=2){
-			printf("%i", lattice[i][j]);
-		}
-		printf("\n");
-	}
 
 }
