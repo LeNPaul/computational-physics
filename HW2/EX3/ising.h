@@ -6,7 +6,9 @@ void printLattice(vector<vector<int>>& lattice);
 
 double Magnetization(vector<vector<int>>& lattice);
 
-void spinFlip(vector<vector<int>>& lattice);
+void MCSweeps(vector<vector<int>>& lattice, int Nmcs);
+
+void spinFlip(vector<vector<int>>& lattice, double T);
 
 void initializeSpin(vector<vector<int>>& lattice);
 

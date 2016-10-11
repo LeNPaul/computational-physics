@@ -31,20 +31,82 @@ double rando()
 
 }
 
-void spinFlip(vector<vector<int>>& lattice)
+double Energy(vector<vector<int>>& lattice)
+{
+	double energy = 0;
+	int L = lattice.size();
+	int i,j;
+
+	for(i=0; i < L; ++i){
+		for(j=0; j < L; ++j){
+
+			//Determining if atom is on the edge
+
+			if(i+1 == L && j+1 != L){
+				energy += - (lattice[i][j]) * (lattice[i][j + 1] + lattice[0][j]);
+			}
+			else if(j+1 == L && i+1 != L){
+				energy += - (lattice[i][j]) * (lattice[i + 1][j] + lattice[i][0]);
+			}
+			else if(j+1 == L && i+1 == L){
+				energy += - (lattice[i][j]) * (lattice[i][0] + lattice[0][j]);
+			}
+			else{
+				energy += - (lattice[i][j]) * (lattice[i][j + 1] + lattice[i + 1][j]);
+			}
+		}
+	}
+
+	return energy;
+
+}
+
+void spinFlip(vector<vector<int>>& lattice, double T)
 {
 	//Pick a random spin
 	
+	double Kb = 1.38064852 * pow10(-23);
+
 	int i,j;
 	int L = lattice.size();
+
+	vector<vector<int>> tempLattice = lattice;
 
 	i = round(rando() * (L-1));
 	j = round(rando() * (L-1));
 
 	//Flip the spin
 
-	lattice[i][j] = - lattice[i][j];
+	tempLattice[i][j] = - lattice[i][j];
 	
+	//Compare energies of both lattices
+	double energy, iE, fE, dE;
+	
+	iE = Energy(lattice);
+	fE = Energy(tempLattice);
+
+	dE = fabs(iE - fE);
+
+	if(exp(- dE / (Kb * T)) > rando())
+	{	
+		//Flip the spin for the actual lattice
+		lattice[i][j] = - lattice[i][j];
+	}
+
+}
+
+void MCSweeps(vector<vector<int>>& lattice, int Nmcs)
+{
+	int L = lattice.size();
+	int i;
+
+	Nmcs = Nmcs * L * L;
+
+	for(i = 0; i < Nmcs; ++i)
+	{
+		spinFlip(lattice,100);
+	}
+
 }
 
 void initializeSpin(vector<vector<int>>& lattice)
@@ -101,35 +163,5 @@ double Magnetization(vector<vector<int>>& lattice)
 	}
 	
 	return total;
-
-}
-
-double Energy(vector<vector<int>>& lattice)
-{
-	double energy = 0;
-	int L = lattice.size();
-	int i,j;
-
-	for(i=0; i < L; ++i){
-		for(j=0; j < L; ++j){
-
-			//Determining if atom is on the edge
-
-			if(i+1 == L && j+1 != L){
-				energy += - (lattice[i][j]) * (lattice[i][j + 1] + lattice[0][j]);
-			}
-			else if(j+1 == L && i+1 != L){
-				energy += - (lattice[i][j]) * (lattice[i + 1][j] + lattice[i][0]);
-			}
-			else if(j+1 == L && i+1 == L){
-				energy += - (lattice[i][j]) * (lattice[i][0] + lattice[0][j]);
-			}
-			else{
-				energy += - (lattice[i][j]) * (lattice[i][j + 1] + lattice[i + 1][j]);
-			}
-		}
-	}
-
-	return energy;
 
 }

@@ -34,21 +34,6 @@ int main()
 
 	//Iterate through
 
-	for(i = 0; i < 10; ++i)
-	{
-		iE = Energy(lattice);
-		printf("The energy below is: %f \n", iE);
-		printf("The magnetization is : %f \n", Magnetization(lattice));
-		printLattice(lattice);
-
-		spinFlip(lattice);
-		
-		fE = Energy(lattice);
-
-		dE = fabs(iE - fE);
-
-		printf("The change in energy is: %f \n", dE);
-
-	}
+	MCSweeps(lattice,10);
 
 }
