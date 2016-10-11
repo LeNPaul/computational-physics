@@ -1,78 +1,54 @@
-#include <random>
-#include <chrono>
 #include <iostream>
+#include <math.h>
+#include <vector>
 #include "ising.h"
 
 using namespace std;
-using namespace chrono;
 
 /*
-http://www.alltheheavylifting.com/five-online-olympic-weightlifting-beginner-programs/
+https://www.mpp.mpg.de/~caldwell/ss10/Lecture11.pdf
+http://nbviewer.jupyter.org/github/s9w/magneto/blob/master/physics.ipynb
+
 */
 
 int main()
 {
 
-	//Initializing important variables
-	int L = 2; //Latice size
-	int lattice[L][L]; //Storing the lattice
+	cout << "Enter the lattice size you wish to implement: " <<endl;
 
-	typedef high_resolution_clock myclock;
+	int L;
 
-	myclock::time_point beginning = myclock::now();
+	cin >> L;
 
-	// obtain a seed from the timer
+	//Initialize an empty array with the appropriate size
+	
+	vector<vector<int>> lattice;
+	lattice.resize(L, vector<int>(L));
 
-	myclock::duration d = myclock::now() - beginning;
+	//Initializing the lattice with spin configurations
 
-	unsigned seed = d.count();
+	initializeSpin(lattice);
 
-	// define the generator
+	int i;
+	double energy, iE, fE, dE;
 
-	mt19937 generator(seed);
+	//Iterate through
 
-	uniform_real_distribution<double> distribution(0,1.0);
+	for(i = 0; i < 10; ++i)
+	{
+		iE = Energy(lattice);
+		printf("The energy below is: %f \n", iE);
+		printf("The magnetization is : %f \n", Magnetization(lattice));
+		printLattice(lattice);
 
-	//Initializing the lattice
+		spinFlip(lattice);
+		
+		fE = Energy(lattice);
 
-	int i,j;
-	for(i=0; i < L; ++i){
-		for(j=0; j < L; ++j){
-			if(distribution(generator) < 0.5){
-				lattice[i][j] = 1;
-				printf(" 1 ");
-			}
-			else
-			{
-				lattice[i][j] = -1;
-				printf("-1 ");
-			}
-		}
-		printf("\n");
+		dE = fabs(iE - fE);
+
+		printf("The change in energy is: %f \n", dE);
+
 	}
 
-	//Determining the energy of the system
-
-	double energy = 0;
-
-	for(i=0; i < L; ++i){
-		for(j=0; j < L; ++j){
-
-			//Determining if atom is on the edge
-
-			if(i+1 == L && j+1 != L){
-				energy += - (lattice[i][j]) * (lattice[i][j + 1] + lattice[0][j]);
-			}
-			else if(j+1 == L && i+1 != L){
-				energy += - (lattice[i][j]) * (lattice[i + 1][j] + lattice[i][0]);
-			}
-			else if(j+1 == L && i+1 == L){
-				energy += - (lattice[i][j]) * (lattice[i][0] + lattice[0][j]);
-			}
-			else{
-				energy += - (lattice[i][j]) * (lattice[i][j + 1] + lattice[i + 1][j]);
-			}
-		}
-	}
-	printf("%f \n", energy);
 }
