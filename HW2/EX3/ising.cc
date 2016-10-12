@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 using namespace chrono;
@@ -80,22 +81,39 @@ void spinFlip(vector<vector<int>>& lattice, double T)
 	tempLattice[i][j] = - lattice[i][j];
 	
 	//Compare energies of both lattices
-	double energy, iE, fE, dE;
+	double iE, fE, dE;
 	
 	iE = Energy(lattice);
 	fE = Energy(tempLattice);
 
-	dE = fabs(iE - fE);
+	dE = fE + iE;
 
-	if(exp(- dE / (Kb * T)) > rando())
+  	ofstream myfile;
+  	myfile.open ("data.txt");
+
+	if(dE <= 0)
 	{	
 		//Flip the spin for the actual lattice
 		lattice[i][j] = - lattice[i][j];
+		printf("First switch, (%i, %i) \n", i, j);
+
+		myfile << "First switch\n" << endl;
 	}
+	else if(dE > 0)
+	{
+		if(exp(- dE / (Kb * T)) > rando())
+		{	
+			//Flip the spin for the actual lattice
+			lattice[i][j] = - lattice[i][j];
+			printf("Change two, (%i, %i) \n", i, j);
+		}
+	}
+
+	//myfile.close();
 
 }
 
-void MCSweeps(vector<vector<int>>& lattice, int Nmcs)
+void MCSweeps(vector<vector<int>>& lattice, int Nmcs, double T)
 {
 	int L = lattice.size();
 	int i;
@@ -104,9 +122,8 @@ void MCSweeps(vector<vector<int>>& lattice, int Nmcs)
 
 	for(i = 0; i < Nmcs; ++i)
 	{
-		spinFlip(lattice,100);
+		spinFlip(lattice,T);
 	}
-
 }
 
 void initializeSpin(vector<vector<int>>& lattice)

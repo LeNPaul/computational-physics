@@ -6,12 +6,17 @@ using namespace std;
 
 int passArray(vector<vector<int>>& array)
 {
+	int test = array[5][5];
+
+	printf("testing: %i \n", test);
 	return 0;
 }
 
 int main()
-{
-	int i,L;
+{cd 
+
+
+
 	printf("Enter lattice size: \n");
 	scanf("%i", &L);
 
@@ -27,11 +32,7 @@ int main()
 
 	lattice.resize(L, vector<int>(L));
 
-	lattice[5][5] = 1;
-
-	int test = lattice[5][5];
-
-	printf("testing: %i \n", test);
+	lattice[5][5] = 1234;
 
 	passArray(lattice);
 
