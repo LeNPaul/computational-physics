@@ -32,8 +32,35 @@ double rando()
 
 }
 
+void printLattice(vector<vector<int>>& lattice)
+{
+
+	//Print out the lattice to the command line
+	//To make it easier to read on the command line, a spin of -1 corresponds to 0
+	
+	int i,j;
+	int L = lattice.size();
+
+	for(i=0; i < L; ++i){
+		for(j=0; j < L; ++j){
+			if(lattice[i][j] == 1)
+			{
+				printf("1 ");
+			}
+			else
+			{
+				printf("  ");
+			}
+		}
+		printf("\n");
+	}	
+}
+
 double Energy(vector<vector<int>>& lattice)
 {
+
+	//Calculates the energy of the lattice
+
 	double energy = 0;
 	int L = lattice.size();
 	int i,j;
@@ -41,7 +68,7 @@ double Energy(vector<vector<int>>& lattice)
 	for(i=0; i < L; ++i){
 		for(j=0; j < L; ++j){
 
-			//Determining if atom is on the edge
+			//Determining if atom is on the edge and applying periodic boundaries
 
 			if(i+1 == L && j+1 != L){
 				energy += - (lattice[i][j]) * (lattice[i][j + 1] + lattice[0][j]);
@@ -57,26 +84,44 @@ double Energy(vector<vector<int>>& lattice)
 			}
 		}
 	}
-
 	return energy;
+}
+
+double Magnetization(vector<vector<int>>& lattice)
+{
+	int i,j;
+	double total;
+	int L = lattice.size();
+
+	for(i = 0; i < L; ++i)
+	{
+		for(j = 0; j < L; ++j)
+		{
+			total += lattice[i][j];
+		}
+	}
+	
+	return total;
 
 }
 
 void spinFlip(vector<vector<int>>& lattice, double T)
 {
-	//Pick a random spin
 	
 	double Kb = 1.38064852 * pow10(-23);
+	double KbTc = log(1+ sqrt(2))/2;;
 
 	int i,j;
 	int L = lattice.size();
 
 	vector<vector<int>> tempLattice = lattice;
 
+	//Pick a random spin
+
 	i = round(rando() * (L-1));
 	j = round(rando() * (L-1));
 
-	//Flip the spin
+	//Flip the spin of a temporary lattice
 
 	tempLattice[i][j] = - lattice[i][j];
 	
@@ -86,30 +131,33 @@ void spinFlip(vector<vector<int>>& lattice, double T)
 	iE = Energy(lattice);
 	fE = Energy(tempLattice);
 
-	dE = fE + iE;
+	//Calculating change in energy, including the J value
+	dE = (fE - iE);
 
   	ofstream myfile;
   	myfile.open ("data.txt");
 
-	if(dE <= 0)
+	if(fE <= iE)
 	{	
 		//Flip the spin for the actual lattice
 		lattice[i][j] = - lattice[i][j];
-		printf("First switch, (%i, %i) \n", i, j);
 
+		//Print data to data.txt
 		myfile << "First switch\n" << endl;
 	}
-	else if(dE > 0)
+	else if(fE > iE)
 	{
-		if(exp(- dE / (Kb * T)) > rando())
+		if(exp(- dE / (T)) > rando())
 		{	
 			//Flip the spin for the actual lattice
 			lattice[i][j] = - lattice[i][j];
-			printf("Change two, (%i, %i) \n", i, j);
+		}else
+		{
+			//Do nothing
 		}
 	}
 
-	//myfile.close();
+	myfile.close();
 
 }
 
@@ -123,6 +171,8 @@ void MCSweeps(vector<vector<int>>& lattice, int Nmcs, double T)
 	for(i = 0; i < Nmcs; ++i)
 	{
 		spinFlip(lattice,T);
+		printf("Iteration: %i \n", i);
+		printLattice(lattice);
 	}
 }
 
@@ -148,37 +198,4 @@ void initializeSpin(vector<vector<int>>& lattice)
 		}
 		//printf("\n");
 	}
-}
-
-void printLattice(vector<vector<int>>& lattice)
-{
-	//Print out the lattice to the command line
-	
-	int i,j;
-	int L = lattice.size();
-
-	for(i=0; i < L; ++i){
-		for(j=0; j < L; ++j){
-			printf(" %i ", lattice[i][j]);
-		}
-		printf("\n");
-	}	
-}
-
-double Magnetization(vector<vector<int>>& lattice)
-{
-	int i,j;
-	double total;
-	int L = lattice.size();
-
-	for(i = 0; i < L; ++i)
-	{
-		for(j = 0; j < L; ++j)
-		{
-			total += lattice[i][j];
-		}
-	}
-	
-	return total;
-
 }

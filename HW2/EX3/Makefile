@@ -2,7 +2,7 @@ CPP=g++
 LINKER=g++
 FFLAGS=-O -std=c++11
 LFLAGS= 
-OBJECTFILES=main.o ising.o
+OBJECTFILES=SQIsing.o ising.o
 
 default: ising
 
@@ -13,7 +13,7 @@ ising: $(OBJECTFILES)
 $(OBJECTFILES):
 	$(CPP) $(FFLAGS) $*.cc -c
 
-main.o: main.cc
+SQIsing.o: SQIsing.cc
 
 ising.o: ising.cc
 
