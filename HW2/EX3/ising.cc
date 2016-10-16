@@ -2,7 +2,6 @@
 #include <chrono>
 #include <iostream>
 #include <vector>
-#include <fstream>
 
 using namespace std;
 using namespace chrono;
@@ -36,7 +35,7 @@ void printLattice(vector<vector<int>>& lattice)
 {
 
 	//Print out the lattice to the command line
-	//To make it easier to read on the command line, a spin of -1 corresponds to 0
+	//To make it easier to read on the command line, a spin of 1 corresponds to 0, and -1 to an empty space
 	
 	int i,j;
 	int L = lattice.size();
@@ -45,7 +44,7 @@ void printLattice(vector<vector<int>>& lattice)
 		for(j=0; j < L; ++j){
 			if(lattice[i][j] == 1)
 			{
-				printf("1 ");
+				printf("0 ");
 			}
 			else
 			{
@@ -107,13 +106,10 @@ double Magnetization(vector<vector<int>>& lattice)
 
 void spinFlip(vector<vector<int>>& lattice, double T)
 {
-	
-	double Kb = 1.38064852 * pow10(-23);
-	double KbTc = log(1+ sqrt(2))/2;;
-
 	int i,j;
 	int L = lattice.size();
 
+	//Initialize a temporary lattice
 	vector<vector<int>> tempLattice = lattice;
 
 	//Pick a random spin
@@ -134,20 +130,14 @@ void spinFlip(vector<vector<int>>& lattice, double T)
 	//Calculating change in energy, including the J value
 	dE = (fE - iE);
 
-  	ofstream myfile;
-  	myfile.open ("data.txt");
-
 	if(fE <= iE)
 	{	
 		//Flip the spin for the actual lattice
 		lattice[i][j] = - lattice[i][j];
-
-		//Print data to data.txt
-		myfile << "First switch\n" << endl;
 	}
 	else if(fE > iE)
 	{
-		if(exp(- dE / (T)) > rando())
+		if(exp(- dE / T) > rando())
 		{	
 			//Flip the spin for the actual lattice
 			lattice[i][j] = - lattice[i][j];
@@ -156,9 +146,6 @@ void spinFlip(vector<vector<int>>& lattice, double T)
 			//Do nothing
 		}
 	}
-
-	myfile.close();
-
 }
 
 void MCSweeps(vector<vector<int>>& lattice, int Nmcs, double T)
@@ -171,7 +158,6 @@ void MCSweeps(vector<vector<int>>& lattice, int Nmcs, double T)
 	for(i = 0; i < Nmcs; ++i)
 	{
 		spinFlip(lattice,T);
-		printf("Iteration: %i \n", i);
 		printLattice(lattice);
 	}
 }
@@ -188,14 +174,20 @@ void initializeSpin(vector<vector<int>>& lattice)
 		for(j=0; j < L; ++j){
 			if(rando() < 0.5){
 				lattice[i][j] = 1;
-				//printf(" 1 ");
 			}
 			else
 			{
 				lattice[i][j] = -1;
-				//printf("-1 ");
 			}
 		}
-		//printf("\n");
+	}
+}
+
+void warmup(vector<vector<int>>& lattice, int NWarmup, double T)
+{
+	//Performs warmup sweeps on an initialized lattice using the spinFlip function
+	for(int i = 0; i < NWarmup; ++i)
+	{
+		spinFlip(lattice,T);
 	}
 }

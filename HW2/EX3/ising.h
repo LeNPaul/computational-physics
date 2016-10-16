@@ -17,3 +17,5 @@ double rando();
 int passArray(vector<vector<int>>& array);
 
 double Energy(vector<vector<int>>& lattice);
+
+void warmup(vector<vector<int>>& lattice, int NWarmup, double T);

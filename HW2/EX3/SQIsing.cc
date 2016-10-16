@@ -1,10 +1,14 @@
 #include <iostream>
-#include <math.h>
 #include <vector>
 #include <fstream>
 #include "ising.h"
 
 using namespace std;
+
+/*
+	Program flow:
+	Take input values for 
+*/
 
 /*
 https://www.mpp.mpg.de/~caldwell/ss10/Lecture11.pdf
@@ -39,34 +43,78 @@ int main()
 
 	cin >> L;
 
-	//Initialize an empty array with the appropriate size then add spin configurations
+	//Initialize an empty array with the appropriate size
 	
 	vector<vector<int>> SpinConf;
 	SpinConf.resize(L, vector<int>(L));
+
+	//Initialize spin configurations
 	initializeSpin(SpinConf);
 
+	//T is taken to be the KbTc/J value
 	cout << "Enter the temperature: " <<endl;
 
 	double T;
 
 	cin >> T;
 
-	cout << "Enter number of sweeps: " <<endl;
+	//Take in number of warmup steps as well as the number of sweeps done
 
-	int Nmcs;
+	cout << "Enter number of warmup sweeps: " <<endl;
 
-	cin >> Nmcs;
+	int NWarmup;
 
-	//Iterate through
+	cin >> NWarmup;
 
-	double before = Energy(SpinConf);
+	cout << "Enter number of sweeps between measurements: " <<endl;
 
-	MCSweeps(SpinConf,Nmcs,T);
+	int NStep;
 
-	double after = Energy(SpinConf);
+	cin >> NStep;
 
-	printf("Energy before is: %f \n", before);
+	cout << "Enter number of measurements to be done: " <<endl;
 
-	printf("Energy after is: %f \n", after);
+	int Nmeas;
 
+	cin >> Nmeas;
+
+	//Perform warmup sweeps
+
+	warmup(SpinConf, NWarmup, T);
+
+	//Iterate through Nmeas measurements, each one performing Nsteps iterations
+
+	//Open a file in write mode.
+	ofstream myfile;
+	myfile.open("data.csv");
+	myfile << "Energy	Energy^2	Magnetization	Magnetization^2\n";
+
+	double energy, magnetization = 0;
+
+	for(int i = 0; i < Nmeas; ++i)
+	{
+		energy = Energy(SpinConf);
+		magnetization = Magnetization(SpinConf);
+
+		//Measure the energy
+		myfile << energy;
+		myfile << "		";
+		myfile << energy*energy;
+		myfile << "		";
+		//myfile << energy*energy*energy*energy;
+
+		//Measure the magnetic field
+		myfile << magnetization;		
+		myfile << "		";
+		myfile << magnetization*magnetization;
+		myfile << "		";
+		//myfile << magnetization*magnetization*magnetization*magnetization;
+		myfile << "\n";
+		
+		MCSweeps(SpinConf, NStep, T);
+
+	}
+
+	//Close the opened file.
+	myfile.close();
 }
