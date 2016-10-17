@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <math.h>
 #include "ising.h"
 
 using namespace std;
@@ -78,43 +79,79 @@ int main()
 
 	cin >> Nmeas;
 
+	cout << "Enter the name of the data file: " <<endl;
+
+	string dataName;
+
+	cin >> dataName;
+
+	cout << "Enter the name of the observable file: " <<endl;
+
+	string observName;
+
+	cin >> observName;
+
+	//Print lattice before warmup
+
+	printf("The initial lattice is: \n");	
+	printLattice(SpinConf);
+
 	//Perform warmup sweeps
 
-	warmup(SpinConf, NWarmup, T);
+	warmup(SpinConf, NWarmup, T, L);
 
-	//Iterate through Nmeas measurements, each one performing Nsteps iterations
+	//Print lattice after warmup
+
+	printf("The lattice after warmup is: \n");	
+	printLattice(SpinConf);
 
 	//Open a file in write mode.
 	ofstream myfile;
-	myfile.open("data.csv");
-	myfile << "Energy	Energy^2	Magnetization	Magnetization^2\n";
+	myfile.open(dataName);
+	//myfile << "Energy	Magnetization\n";
 
-	double energy, magnetization = 0;
+	double energy, magnetization;
+
+	double totalE1, totalM1, totalE2, totalM2, totalE4, totalM4 = 0;
+
+	//Iterate through Nmeas measurements, each one performing Nsteps iterations
 
 	for(int i = 0; i < Nmeas; ++i)
 	{
 		energy = Energy(SpinConf);
 		magnetization = Magnetization(SpinConf);
 
-		//Measure the energy
-		myfile << energy;
-		myfile << "		";
-		myfile << energy*energy;
-		myfile << "		";
-		//myfile << energy*energy*energy*energy;
+		//Calculate the sum of the observables
+		totalE1 += energy;
+		totalE2 += energy*energy;
+		totalE4 += energy*energy*energy*energy;
 
-		//Measure the magnetic field
+		totalM1 += magnetization;
+		totalM2 += magnetization*magnetization;
+		totalM4 += magnetization*magnetization*magnetization*magnetization;
+
+		//Measure the energy and output to data.csv
+		myfile << i + 1;
+		myfile << ",";
+		myfile << energy;
+		myfile << ",";
+
+		//Measure the magnetic field and output to data.csv
 		myfile << magnetization;		
-		myfile << "		";
-		myfile << magnetization*magnetization;
-		myfile << "		";
-		//myfile << magnetization*magnetization*magnetization*magnetization;
 		myfile << "\n";
 		
 		MCSweeps(SpinConf, NStep, T);
 
 	}
 
-	//Close the opened file.
+	//Print lattice at the end
+	printf("The final lattice is: \n");	
+	printLattice(SpinConf);
+
+	//Close the opened file
 	myfile.close();
+
+	//Calculate and record observables
+	printObservables(totalE1, totalM1, totalE2, totalM2, totalE4, totalM4, Nmeas, T, L, observName);
+
 }

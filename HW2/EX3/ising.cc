@@ -1,6 +1,7 @@
 #include <random>
 #include <chrono>
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 using namespace std;
@@ -89,7 +90,7 @@ double Energy(vector<vector<int>>& lattice)
 double Magnetization(vector<vector<int>>& lattice)
 {
 	int i,j;
-	double total;
+	double total = 0;
 	int L = lattice.size();
 
 	for(i = 0; i < L; ++i)
@@ -158,7 +159,7 @@ void MCSweeps(vector<vector<int>>& lattice, int Nmcs, double T)
 	for(i = 0; i < Nmcs; ++i)
 	{
 		spinFlip(lattice,T);
-		printLattice(lattice);
+		//printLattice(lattice);
 	}
 }
 
@@ -183,11 +184,88 @@ void initializeSpin(vector<vector<int>>& lattice)
 	}
 }
 
-void warmup(vector<vector<int>>& lattice, int NWarmup, double T)
+void warmup(vector<vector<int>>& lattice, int NWarmup, double T, int L)
 {
 	//Performs warmup sweeps on an initialized lattice using the spinFlip function
-	for(int i = 0; i < NWarmup; ++i)
+	for(int i = 0; i < NWarmup * L * L; ++i)
 	{
 		spinFlip(lattice,T);
 	}
+}
+
+void printObservables(double totalE1, double totalM1, double totalE2, double totalM2, double totalE4, double totalM4, int Nmeas, double T, int L, string dataName)
+{
+	//Open a new file in write mode for the observables
+	ofstream myfile;
+	myfile.open(dataName);
+
+	//Record the observables
+
+	myfile << "Observables \n";
+
+	myfile << "<E1>: ";
+	myfile << totalE1 / Nmeas;	
+	myfile << "\n";
+	myfile << "<E2>: ";
+	myfile << totalE2 / Nmeas;
+	myfile << "\n";
+	myfile << "<E4>: ";
+	myfile << totalE4 / Nmeas;
+	myfile << "\n";
+
+	myfile << "<M1>: ";
+	myfile << totalM1 / Nmeas;	
+	myfile << "\n";
+	myfile << "<M2>: ";
+	myfile << totalM2 / Nmeas;
+	myfile << "\n";
+	myfile << "<M4>: ";
+	myfile << totalM4 / Nmeas;
+	myfile << "\n";
+
+	//Standard deviation
+	double SDE = sqrt(totalE2 / Nmeas - (totalE1 / Nmeas)*(totalE1 / Nmeas) );
+
+	myfile << "SDE: ";
+	myfile << SDE;
+	myfile << "\n";
+
+	double SDM = sqrt(totalM2 / Nmeas - (totalM1 / Nmeas)*(totalM1 / Nmeas) );
+
+	myfile << "SDM: ";
+	myfile << SDM;
+	myfile << "\n";
+
+	double SDOME = sqrt((totalE2 / Nmeas - (totalE1 / Nmeas)*(totalE1 / Nmeas)) / (Nmeas - 1));
+
+	myfile << "SDOME: ";
+	myfile << SDOME;
+	myfile << "\n";
+
+	double SDOMM = sqrt((totalM2 / Nmeas - (totalM1 / Nmeas)*(totalM1 / Nmeas)) / (Nmeas - 1));
+
+	myfile << "SDOMM: ";
+	myfile << SDOMM;
+	myfile << "\n";
+
+	double X = (totalM2 / Nmeas) / (T * L * L);
+
+	myfile << "X: ";
+	myfile << X;
+	myfile << "\n";
+
+	double Cv = (totalE2 / Nmeas - (totalE1 / Nmeas)*(totalE1 / Nmeas)) / (L * L * T);
+
+	myfile << "Cv: ";
+	myfile << Cv;
+	myfile << "\n";
+
+	double gTL = 0.5 * (3 - (totalM4 / Nmeas) / ((totalM2 / Nmeas) * (totalM2 / Nmeas)));
+
+	myfile << "gTL: ";
+	myfile << gTL;
+	myfile << "\n";
+
+	//Close the opened file
+	myfile.close();
 }
