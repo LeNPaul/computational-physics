@@ -2,6 +2,6 @@
 
 using namespace std;
 
-void printMatrix(vector<vector<int>>& matrix);
+void printMatrix(vector<vector<double>>& matrix);
 
-//void jacdiag(Matrix & A, vector<double> & d);
+void jacdiag(vector<vector<double>> & A, vector<double> & d);

@@ -4,32 +4,23 @@
 
 using namespace std;
 
-void printMatrix(vector<vector<int>>& matrix)
+void printMatrix(vector<vector<double>> & matrix)
 {
 
 	//Print out the Matrix to the command line
-	//To make it easier to read on the command line, a spin of 1 corresponds to 0, and -1 to an empty space
 	
 	int i,j;
-	int L = matrix.size();
+	int n = matrix.size();
 
-	for(i=0; i < L; ++i){
-		for(j=0; j < L; ++j){
-			if(matrix)[i][j] == 1)
-			{
-				printf("0 ");
-			}
-			else
-			{
-				printf("  ");
-			}
+	for(i=0; i < n; ++i){
+		for(j=0; j < n; ++j){
+			printf("%f ", matrix[i][j]);
 		}
 		printf("\n");
-	}	
+	}
 }
 
-/*
-void jacdiag(Matrix & A, vector<double> & d)
+void jacdiag(vector<vector<double>> & A, vector<double> & d)
 {
 	//Taking in the required variables
 
@@ -39,11 +30,11 @@ void jacdiag(Matrix & A, vector<double> & d)
 
 	cin >> n;
 
-	cout << "Enter the matrix size you wish to implement: " <<endl;
+	cout << "Enter the number of rows: " <<endl;
 
-	int n;
+	int m;
 
-	cin >> n;
+	cin >> m;
 
 }
-*/
+
