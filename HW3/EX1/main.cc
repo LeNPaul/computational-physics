@@ -1,6 +1,9 @@
 #include <cmath>
+#include <time.h>
 #include <vector>
+#include <fstream>
 #include <iostream>
+#include <algorithm>
 #include "jacobi.h"
 
 using namespace std;
@@ -8,50 +11,61 @@ using namespace std;
 typedef vector<double> Row; // One row of the matrix
 typedef vector<Row> Matrix; // Matrix: a vector of rows
 
-/*
-	To do:
-		Compare with Python implementation
-		Implement timer for performance
-		Structure program so that it automatically does everything I need it to do, and outputs the appropriate data
-		Output data to csv file
-		Get program to take in inputs through a csv file that it reads, and then runs the program automatically
-*/
-
 int main()
 {
 
-	Matrix A;
+	//Open a new file in write mode for the observables
+	ofstream myfile;
+	myfile.open("data.csv");
 
-	Row d;
-	
-	int n = 40;
-
-	A.resize(n, vector<double>(n));
-	d.resize(n);
-
-	/*A = {
-			{1,2,3},
-			{2,2,2},
-			{3,2,3}
-		};*/
-
-	initializeEnergy(A);
-
-	printMatrix(A);
-
-
-	for(int i = 0; i < 10; ++i)
+	for(int k = 1; k <= 5; ++k)
 	{
-		cout<<"The sum of squares is: "<<sqSum(A)<<endl;
-		jacdiag(A, d);
-		printMatrix(A);
+
+		Matrix A;
+
+		Row d;
+
+		int n =	10 * k;
+
+		A.resize(n, vector<double>(n));
+		d.resize(n);
+
+		initializeEnergy(A);
+
+		//Determine the time that this function takes
+		clock_t tic = clock();
+
+		myfile << "*****************\nMatrx of size " << n << "\n" << "*****************\n";
+
+		myfile << "\nThe sum of squares is:\n";
+
+		for(int i = 1; i <= 10; ++i)
+		{
+			myfile << i << ": " << sqSum(A) << "\n";
+
+			//Diagonalize matrix
+			jacdiag(A, d);
+		}
+
+		//Print time elapsed
+		clock_t toc = clock();
+
+		//Sort the eigenvalues
+		sort(d.begin(), d.begin() + n);
+
+		myfile << "\nEigenvalues: \n";
+
+		for(int i = 0; i < n; ++i)
+		{
+			myfile << d[i] << "\n";
+		}
+
+		myfile << "\nTime elapsed: " << (double)(toc - tic)/ CLOCKS_PER_SEC << "\n\n";
+
 	}
 
-	printf("The eigenvalues are: \n");
-	for(int i = 0; i < d.size(); ++i)
-	{
-		printf("%f \n", d[i]);
-	}
+	//Close the opened file
+	myfile.close();
 
 	return 0;
 }
