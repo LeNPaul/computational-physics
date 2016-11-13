@@ -2,14 +2,17 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
+#include <vector>
 #include "numerov.h"
 
 using namespace  std;
 
 int main()
 {
+    
 	//Set the grid size
 	int N = 100;
+	int x_m = 0;
     
 	vector<double> phi_r;
 	phi_r.resize(N);
@@ -18,8 +21,8 @@ int main()
 	phi_l.resize(N);
 
     //Set the boundary sizes
-	double x_left = -5;
-	double x_right = 5;
+	double x_left = -6;//-5;
+	double x_right = 6;//5;
     
     //Determine the step size
 	double h = (x_right - x_left) / N;
@@ -28,8 +31,8 @@ int main()
 	ofstream myfile;
 	myfile.open("data.csv");
 
-	right_phi(phi_r, h);
-	left_phi(phi_l, h);
+	right_phi(phi_r, h, x_right, x_m);
+	left_phi(phi_l, h, x_left, x_m);
 
 	for(int i = 0; i < N; ++i)
 	{
@@ -43,7 +46,6 @@ int main()
 
 	//Close the opened file
 	myfile.close();
-
+    
 	return 0;
-
 }
