@@ -1,9 +1,11 @@
+#include <vector>
+
+using namespace std;
+
 double V(double x);
 
-double kappa(double E, double x);
+double kappa(double x);
 
-double initial_phi(double c_phi, double p_phi);
+void right_phi(vector<double> & phi_r, double h);
 
-double left_phi();
-
-double right_phi();
+void left_phi(vector<double> & phi_l, double h);
