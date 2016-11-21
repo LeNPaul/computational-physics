@@ -10,16 +10,19 @@ double pi = 3.14159265359;
 double hbar = 1;
 double m = 1;
 double sum = 0;
+double E;
 
+//Set the grid size
 int N = 10000;
 
-double x_left = -100; //left boundary
-double x_right =  100; //right boundary
-double h = (x_right - x_left) / N; //step space
+//Set the boundary sizes
+double x_left = -100; //Left boundary
+double x_right =  100; //Right boundary
+
+//Determine the step size
+double h = (x_right - x_left) / N;
 
 int i_match = 0;
-
-double E;
 
 vector <double> phi_left(N + 1); //wave function integrating from left
 vector <double> phi_right(N + 1); //wave function integrating from right
@@ -64,24 +67,26 @@ double V3(double x)
 	}
 }
 
-//THE K VALUE
-double q(double x)
+//The k value
+double kappa(double x)
 {
-    return (E-V(x));
+	//Since kappa always appears squared, we can just return the unsquared value
+	return m * (E - V(x)) / (hbar * hbar);
 }
 
-// THE ENERGY FUNCTION
-double F(double E_temp)
+//The eigenvalue function
+double F(double E)
 {
-    E= E_temp;
+    //Use the global E value
+    ::E= E;
     double x = x_right; //start at right boundary
     i_match = N;
-
-    while(V(x)> E) //in forbiden regon
+    
+    while(V(x) > E) //in forbiden regon
     {
         --i_match;
         x-= h;
-        if(i_match<0)
+        if(i_match < 0)
         {
             cerr << "Can't find right turning point" << endl;
             exit(EXIT_FAILURE);
@@ -92,69 +97,65 @@ double F(double E_temp)
     phi_left[0] = 0;
     phi_left[1] = 1e-10;
 
-    double c = h * h / 12; // constant in Numerov formula
-
     for (int i = 1; i <= i_match; i++)
     {
         x = x_left + i * h;
-        phi_left[i+1] = 2 * (1 - 5 * c * q(x)) * phi_left[i];
-        phi_left[i+1] -= (1 + c * q(x - h)) * phi_left[i-1];
-        phi_left[i+1] /= 1 + c * q(x + h);
+        phi_left[i + 1] = ( 2 * (1 - 5 * h * h * kappa(x) / 12) * phi_left[i] - ( 1 + h * h * kappa(x - h) / 12 ) * phi_left[i - 1] ) / ( 1 + h * h * kappa(x + h) / 12 );
     }
-    
+        
     //integrate from right
     phi[N] = phi_right[N] = 0;
     phi[N-1] = phi_right[N-1] = 1e-10;
 
-    for(int i = N-1; i>= i_match; i--)
+    for(int i = N - 1; i>= i_match; i--)
     {
         x= x_right- i*h;
-        phi_right[i-1] = 2*(1-5*c*q(x))*phi_right[i];
-        phi_right[i-1] -= (1+ c*q(x+h))*phi_right[i+1];
-        phi[i-1] = phi_right[i-1] /= 1 + c*q(x-h);
+        phi_right[i - 1] = (2 * (1 - 5 * h * h * kappa(x) / 12) * phi_right[i] - (1 + h * h * kappa(x + h) / 12) * phi_right[i + 1] ) / (1 + h * h * kappa(x - h) / 12);
+        
+        phi[i-1] = phi_right[i - 1] /= 1 + h * h * kappa(x - h) / 12;
     }
 
-    //the scale
-    double scale= phi_right[i_match]/phi_left[i_match];
-
-    for (int i= 0;i<= i_match+ 1; i++)
+    //Rescale the phi_l vector to match the points
+    for (int i= 0; i <= i_match + 1; i++)
     {
-        phi[i]= phi_left[i] *= scale;
+        phi[i] = phi_left[i] * phi_right[i_match] / phi_left[i_match];
     }
 
+    //Problems may occur if a discontinuity occurs in F(E)
+    //To prevent this, do the following:
+    
     static int sign = 1; // current sign used
     static int nodes = 0; // current number of nodes
 
-    // count number of nodes in phi_left
+    //Count number of nodes in phi_left
     int n = 0;
     for (int i = 1; i <= i_match; i++)
-    if (phi_left[i-1] * phi_left[i] < 0)
-    ++n;
+    {
+        if (phi_left[i-1] * phi_left[i] < 0)
+        {
+            ++n;
+        }
+    }
 
-    // flip its sign when a new node develops
+    //Flip its sign when a new node develops
     if (n != nodes) 
     {
         nodes = n;
         sign = -sign;
     }
-
-    return sign * ( phi_right[i_match-1] - phi_right[i_match+1]
-    - phi_left[i_match-1] + phi_left[i_match+1] )
-    / (2 * h * phi_right[i_match]);
+    
+    return sign * (phi_right[i_match - 1] - phi_right[i_match + 1] - phi_left[i_match - 1] + phi_left[i_match + 1]) / (2 * h * phi_right[i_match]);
 
 }
 
-//NORMALIZE SECTION
-
 void sum_check()
 {
-    sum= 0;
+    sum = 0;
     for (int i = 0; i < N; i++)
     {
-        sum += phi[i] * phi[i]* h;
+        sum += phi[i] * phi[i] * h;
     }
-    cout << "The sum is " << sum << endl;
-}//end of normalization
+}
 
 void normalize()
 {
@@ -162,22 +163,19 @@ void normalize()
     {
         double norm = 0;
         for (int i = 0; i < N; i++)
-    {
-    norm += phi[i] * phi[i];
+        {
+            norm += phi[i] * phi[i];
+        }
+
+        //norm /= N;
+        norm = sqrt(norm);
+
+        for (int i = 0 ; i <N ; i++)
+        {
+            phi[i] /= (norm * h);
+        }
+    }
 }
-
-//norm /= N;
-norm = sqrt(norm);
-
-for (int i = 0 ; i <N ; i++)
-{
-    phi[i] /= (norm*h);
-}
-
-}
-
-}//end of normalization
-
 
 //1.5
 double F_symmmetry()
@@ -188,7 +186,7 @@ double F_symmmetry()
     double cnt = 0;
     int N_half = N/2;
 
-    for (int i = 0 ; i <=interval_sym/h; i= i + 1 )
+    for (int i = 0; i <= interval_sym / h; i = i + 1 )
     {
         dev_sym += pow(pow(phi[N_half-i],2) - pow(phi[N_half + i],2), 2);
         cnt++;
@@ -199,14 +197,14 @@ double F_symmmetry()
     return dev_sym;
 }
 
-double bisection(double  E_high, double  E_low)
+double bisection(double  E_b, double  E_a)
 {
-    //maximum value bisections before terminating at  a value
+    //Number of iterations before returning a root
     int i_max = 15;
 
-    // use bessel function to find values at boundaries
-    double  F_high = F(E_high);
-    double F_low = F(E_low);
+    //Use F(E) to find values at boundaries
+    double  F_b = F(E_b);
+    double F_a = F(E_a);
 
     double  E_mid;
     double F_mid;
@@ -214,58 +212,49 @@ double bisection(double  E_high, double  E_low)
     //calculate the bisected region of the interval
     for (int i = 0 ; i< i_max; i++)
     {
-        E_mid= (E_high + E_low)/2;
+        E_mid= (E_b + E_a) / 2;
+
         F_mid = F(E_mid);
-        F_high= F(E_high);
-        F_low= F(E_low);
+        F_b = F(E_b);
+        F_a = F(E_a);
 
-        //dependng on whether the boundaries are positive or negative and whether the middle is positive or negative
-        //re-adjust the intervals  boundaries before re-iteration of loop
-    /*
-        cout<< "E_HIGH: "<<E_high<<"    F_HIGH :  "<<F_high<<endl;
-        ;
-        cout<< "E_MID: "<<F_mid<<"    F_MID :  "<<F(E_mid)<<endl;
-        cout<< "E_LOW : "<<E_low<<"    F_LOW :  "<<F_low<<endl;
-        cout<< "\n"<<endl;
-        cout<< "\n"<<endl;
-    */
-        if (F_mid > 0)
-            if (F_high > 0)
-        {
-            {
-               E_high = E_mid;
-            }
-        }
-
-
-          if (F_mid < 0)
-            if (F_high > 0)
-        {
-            {
-               E_low = E_mid;
-            }
-        }
-
+        //Reference used for the bisection algorithm: https://en.wikipedia.org/wiki/Bisection_method
 
         if (F_mid > 0)
-            if (F_high < 0)
         {
+            if (F_b > 0)
             {
-               E_low = E_mid;
+               E_b = E_mid;
+            }
+        }
+        
+        if (F_mid < 0)
+        {
+            if (F_b > 0)
+            {
+               E_a = E_mid;
             }
         }
 
-
-          if (F_mid < 0)
-            if (F_high < 0)
+        if (F_mid > 0)
         {
+            if (F_b < 0)
             {
-               E_high = E_mid;
+               E_a = E_mid;
+            }
+        }
+
+        if (F_mid < 0)
+        {
+            if (F_b < 0)
+            {
+               E_b = E_mid;
             }
         }
     }
-    //terminate and return a value
+    
     return E_mid;
+
 }
 
 int main()
@@ -283,11 +272,22 @@ int main()
 	double step_E = (E_stop - E_start) / 4000;
 
     //Open the data files for recording observables
+    ofstream myfile_v;
+    myfile_v.open("data_potential.csv");
+    
     ofstream myfile_phi;
-    myfile_phi.open("data_1_4_phi.csv");
-  	ofstream myfile;
+    myfile_phi.open("data_phi.csv");
+  	
+    ofstream myfile;
 	myfile.open("data_1_5_symm.csv");
 
+    //Draw the potential for visualization purposes
+    for (int i = 0; i <= N; i++)
+    {
+        double x = x_left + i * h;
+        myfile_v << V(x) << '\n';
+    }
+    
     //Set up header for data files
 	//myfile << "E" << "," << "F_E" << "," << "F_symm" << "\n";
 
@@ -298,12 +298,7 @@ int main()
         normalize();
         temp_F_E = F(E);
         temp_F_symm = F_symmmetry();
-/*
-        cout << "The  Energy is:    " << E << endl;
-        cout << "The value of F(E) is: " << temp_F_E << endl;
-        cout << "The value of F_symm(E) is: " << temp_F_symm << endl;
-        cout << "\n" << endl;
-*/
+
         myfile << E << "," << temp_F_E << "," << temp_F_symm << "\n";
     }
    
@@ -344,12 +339,9 @@ int main()
     
     for (int j= 0 ; j <= 6; j++)
     {
+        //Use the bisection routine to determine the roots
         E= bisection(E_min[j], E_max[j]);
-/*            cout<<"The value of E"<<j<<" is : "<<E<<endl;
-            cout<<"The value of F(E) is : "<<F(E)<<endl;
-            cout<<"The value of F_symm  : "<<F_symmmetry()<<endl;
-            cout<<"\n"<<endl;
-*/
+
         normalize();
  
         sum_check();
@@ -363,5 +355,5 @@ int main()
     //Close opened data files
     myfile.close();
     myfile_phi.close();
-        
+    myfile_v.close();
 }
