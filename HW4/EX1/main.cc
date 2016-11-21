@@ -5,13 +5,14 @@
 
 using namespace std;
 
+//Set some constants as global variables
 double pi = 3.14159265359;
 double hbar = 1;
 double m = 1;
 double sum = 0;
 
+int N = 10000;
 
-int N= 10000;
 double x_left = -100; //left boundary
 double x_right =  100; //right boundary
 double h = (x_right - x_left) / N; //step space
@@ -69,14 +70,11 @@ double q(double x)
     return (E-V(x));
 }
 
-
-
 // THE ENERGY FUNCTION
 double F(double E_temp)
 {
-
     E= E_temp;
-    double x= x_right; //start at right boundary
+    double x = x_right; //start at right boundary
     i_match = N;
 
     while(V(x)> E) //in forbiden regon
@@ -85,12 +83,10 @@ double F(double E_temp)
         x-= h;
         if(i_match<0)
         {
-            cerr<<"can't find right turning point"<<endl;
+            cerr << "Can't find right turning point" << endl;
             exit(EXIT_FAILURE);
         }
     }
-
-
 
     // integrate phi_left using Numerov algorithm
     phi_left[0] = 0;
@@ -99,7 +95,6 @@ double F(double E_temp)
     double c = h * h / 12; // constant in Numerov formula
 
     for (int i = 1; i <= i_match; i++)
-
     {
         x = x_left + i * h;
         phi_left[i+1] = 2 * (1 - 5 * c * q(x)) * phi_left[i];
@@ -158,12 +153,12 @@ void sum_check()
     {
         sum += phi[i] * phi[i]* h;
     }
-    cout << "The sum is "<< sum<<endl;
+    cout << "The sum is " << sum << endl;
 }//end of normalization
 
 void normalize()
 {
-    if (sum!= 1)
+    if (sum != 1)
     {
         double norm = 0;
         for (int i = 0; i < N; i++)
@@ -188,18 +183,18 @@ for (int i = 0 ; i <N ; i++)
 double F_symmmetry()
 {
     normalize();
-    double dev_sym = 0 ;
-    int interval_sym= 5;
-    double cnt= 0 ;
-    int N_half= N/2;
+    double dev_sym = 0;
+    int interval_sym = 5;
+    double cnt = 0;
+    int N_half = N/2;
 
     for (int i = 0 ; i <=interval_sym/h; i= i + 1 )
     {
-        dev_sym += pow(pow(phi[N_half-i],2)- pow(phi[N_half+i],2), 2);
+        dev_sym += pow(pow(phi[N_half-i],2) - pow(phi[N_half + i],2), 2);
         cnt++;
     }
 
-    dev_sym= sqrt(dev_sym/cnt);
+    dev_sym = sqrt(dev_sym / cnt);
 
     return dev_sym;
 }
@@ -207,7 +202,7 @@ double F_symmmetry()
 double bisection(double  E_high, double  E_low)
 {
     //maximum value bisections before terminating at  a value
-    int i_max =15;
+    int i_max = 15;
 
     // use bessel function to find values at boundaries
     double  F_high = F(E_high);
@@ -218,31 +213,27 @@ double bisection(double  E_high, double  E_low)
 
     //calculate the bisected region of the interval
     for (int i = 0 ; i< i_max; i++)
+    {
+        E_mid= (E_high + E_low)/2;
+        F_mid = F(E_mid);
+        F_high= F(E_high);
+        F_low= F(E_low);
 
-        {
-
-          E_mid= (E_high + E_low)/2;
-         F_mid = F(E_mid);
-         F_high= F(E_high);
-         F_low= F(E_low);
-
-         //dependng on whether the boundaries are positive or negative and whether the middle is positive or negative
-         //re-adjust the intervals  boundaries before re-iteration of loop
+        //dependng on whether the boundaries are positive or negative and whether the middle is positive or negative
+        //re-adjust the intervals  boundaries before re-iteration of loop
     /*
-         cout<< "E_HIGH: "<<E_high<<"    F_HIGH :  "<<F_high<<endl;
-         ;
-         cout<< "E_MID: "<<F_mid<<"    F_MID :  "<<F(E_mid)<<endl;
-         cout<< "E_LOW : "<<E_low<<"    F_LOW :  "<<F_low<<endl;
-         cout<< "\n"<<endl;
-         cout<< "\n"<<endl;
+        cout<< "E_HIGH: "<<E_high<<"    F_HIGH :  "<<F_high<<endl;
+        ;
+        cout<< "E_MID: "<<F_mid<<"    F_MID :  "<<F(E_mid)<<endl;
+        cout<< "E_LOW : "<<E_low<<"    F_LOW :  "<<F_low<<endl;
+        cout<< "\n"<<endl;
+        cout<< "\n"<<endl;
     */
-
-
         if (F_mid > 0)
             if (F_high > 0)
         {
             {
-               E_high= E_mid;
+               E_high = E_mid;
             }
         }
 
@@ -251,7 +242,7 @@ double bisection(double  E_high, double  E_low)
             if (F_high > 0)
         {
             {
-               E_low= E_mid;
+               E_low = E_mid;
             }
         }
 
@@ -260,7 +251,7 @@ double bisection(double  E_high, double  E_low)
             if (F_high < 0)
         {
             {
-               E_low= E_mid;
+               E_low = E_mid;
             }
         }
 
@@ -269,7 +260,7 @@ double bisection(double  E_high, double  E_low)
             if (F_high < 0)
         {
             {
-               E_high= E_mid;
+               E_high = E_mid;
             }
         }
     }
@@ -280,85 +271,97 @@ double bisection(double  E_high, double  E_low)
 int main()
 {
 
-	cout << " Eigenvalues of the Schroedinger equation\n" << " for V(x) = 0.2 x^2 - 14\n";
+	//cout << " Eigenvalues of the Schroedinger equation\n" << " for V(x) = 0.2 x^2 - 14\n";
 
     //This is the energy to stop at
-	double E_max = -12.0;
+	double E_stop = -12.0;
     
     //This is the energy to start at
-	double E_min = -14.0;
+	double E_start = -14.0;
     
     //This is how much to increment the energy
-	double step_E = (E_max- E_min) / 4000;
+	double step_E = (E_stop - E_start) / 4000;
 
-	ofstream myfile;
-	ofstream myfile_phi;
+    //Open the data files for recording observables
+    ofstream myfile_phi;
+    myfile_phi.open("data_1_4_phi.csv");
+  	ofstream myfile;
+	myfile.open("data_1_5_symm.csv");
 
-	myfile.open("data_HW4_1_5_symm.csv");
-    myfile_phi("data_phi");
-
-	myfile<<"E"<<","<<"F_E"<<","<<"F_symm"<<"\n";
+    //Set up header for data files
+	//myfile << "E" << "," << "F_E" << "," << "F_symm" << "\n";
 
 	double temp_F_E, temp_F_symm;
 
-    for (E = E_min; E <= E_max; E = E + step_E)
+    for (E = E_start; E <= E_stop; E = E + step_E)
     {
         normalize();
         temp_F_E = F(E);
         temp_F_symm = F_symmmetry();
-
-        /*        cout<<"The  Energy is :    "<<E<<endl;
-        cout<<"The value of F(E) is : "<<temp_F_E<<endl;
-        cout<<"The value of F_symm(E) is : "<<temp_F_symm<<endl;
-        cout<<"\n"<<endl;
-    
-        myfile<<E<<","<<temp_F_E<<","<<temp_F_symm<<"\n";
-        */
-    }
-
-    for(int P = 0; P < N + 1; ++P)
-    {
-        myfile << fabs(phi[P]*phi[P]) << "\n";
-    }
-    
 /*
-    cout << " Eigenvalues of the Schroedinger equation\n"
-    << " for V(x) = 0.2 x^2 - 14\n";
+        cout << "The  Energy is:    " << E << endl;
+        cout << "The value of F(E) is: " << temp_F_E << endl;
+        cout << "The value of F_symm(E) is: " << temp_F_symm << endl;
+        cout << "\n" << endl;
+*/
+        myfile << E << "," << temp_F_E << "," << temp_F_symm << "\n";
+    }
+   
+    //This is where the code that records the observables starts
+    
+    //cout << "Eigenvalues of the Schroedinger equation\n" << " for V(x) = 0.2 x^2 - 14\n";
 
-    ofstream myfile;
-
-    myfile.open ("data_HW4_1_5_symm.csv");
-
-    myfile<<"E"<<","<<"X"<<","<<"PHI"<<"\n";
+    //Set up header for data files
+    //myfile_phi << "E" << "," << "X" << "," << "PHI" << "\n";
 
     //eigenvalue 1
     vector <double> E_max(6), E_min(6);
 
-    E_max[0]= -13.54; E_min[0]=-13.56;
-    E_min[1]= -12.7; E_max[1]=-12.6 ;
-    E_min[2]= -11.8; E_max[2]=-11.75 ;
-    E_min[3]= -10.9; E_max[3]=-10.8 ;
-    E_min[4]= -9.95; E_max[4]=-9.85 ;
-    E_min[5]= -8.95; E_max[5]=-8.85 ;
-    E_min[6]= -7.8; E_max[6]=-7.7 ;
+    E_max[0] = -13.54; 
+    E_min[0] = -13.56;
 
+    E_min[1] = -12.7; 
+    E_max[1] = -12.6;
+    
+    E_min[2] = -11.8; 
+    E_max[2] = -11.75;
+    
+    E_min[3] = -10.9; 
+    E_max[3] = -10.8;
+    
+    E_min[4] = -9.95; 
+    E_max[4] = -9.85;
+    
+    E_min[5] = -8.95; 
+    E_max[5] = -8.85;
+    
+    E_min[6] = -7.8; 
+    E_max[6] = -7.7;
+
+    //Record all the wavefunctions in one file
+    
     double sum= 0 ;
+    
     for (int j= 0 ; j <= 6; j++)
     {
-
         E= bisection(E_min[j], E_max[j]);
-            cout<<"The value of E"<<j<<" is : "<<E<<endl;
+/*            cout<<"The value of E"<<j<<" is : "<<E<<endl;
             cout<<"The value of F(E) is : "<<F(E)<<endl;
             cout<<"The value of F_symm  : "<<F_symmmetry()<<endl;
             cout<<"\n"<<endl;
-    normalize();
-    sum_check();
-      for (int i= 0 ; i <= N ; i++)
+*/
+        normalize();
+ 
+        sum_check();
+ 
+        for (int i= 0 ; i <= N ; i++)
         {
-
-            myfile<<j<<","<<x_left+h*i<<","<<phi[i]<<"\n";
+            myfile_phi << j << "," << x_left + h * i << "," << fabs(phi[i] * phi[i]) << "\n";
         }
     }
-*/
-
+    
+    //Close opened data files
+    myfile.close();
+    myfile_phi.close();
+        
 }
