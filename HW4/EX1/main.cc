@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <math.h>
+#include "numerov.h"
 
 using namespace std;
 
@@ -9,15 +10,18 @@ using namespace std;
 double pi = 3.14159265359;
 double hbar = 1;
 double m = 1;
-double sum = 0;
 double E;
 
 //Set the grid size
 int N = 10000;
 
-//Set the boundary sizes
+//Set the boundary sizes for 1.3
 double x_left = -100; //Left boundary
 double x_right = 100; //Right boundary
+
+//Set the boundary sizes for 1.6
+//double x_left = 0; //Left boundary
+//double x_right = pi / 2; //Right boundary
 
 //Determine the step size
 double h = (x_right - x_left) / N;
@@ -56,10 +60,6 @@ double V2(double x)
 	if(x < pi / 2 && x > 0)
 	{
 		return (hbar * hbar / (2 * m)) * (0.05 / (sin(x) * sin(x)) + 5 / (cos(x) * cos(x)));
-	}
-	else
-	{
-		return 0;
 	}
 }
 
@@ -164,53 +164,27 @@ double F(double E)
 
 }
 
-void sum_check()
+void normalize(vector<double> & phi)
 {
-    sum = 0;
-    for (int i = 0; i < N; i++)
+    //This function normalizes the phi array
+    
+    double sum = 0;
+    
+    int N = phi.size();
+    
+    double norm = 0;
+    for (int i = 0; i < N; ++i)
     {
-        sum += phi[i] * phi[i] * h;
-    }
-}
-
-void normalize()
-{
-    if (sum != 1)
-    {
-        double norm = 0;
-        for (int i = 0; i < N; ++i)
-        {
-            norm += phi[i] * phi[i];
-        }
-
-        //norm /= N;
-        norm = sqrt(norm);
-
-        for (int i = 0; i < N; ++i)
-        {
-            phi[i] /= (norm);
-        }
-    }
-}
-
-//1.5
-double F_symmmetry()
-{
-    normalize();
-    double dev_sym = 0;
-    int interval_sym = 5;
-    double cnt = 0;
-    int N_half = N / 2;
-
-    for (int i = 0; i <= interval_sym / h; i = i + 1 )
-    {
-        dev_sym += pow(pow(phi[N_half-i],2) - pow(phi[N_half + i],2), 2);
-        cnt++;
+        norm += phi[i] * phi[i];
     }
 
-    dev_sym = sqrt(dev_sym / cnt);
+    //norm /= N;
+    norm = sqrt(norm);
 
-    return dev_sym;
+    for (int i = 0; i < N; ++i)
+    {
+        phi[i] /= (norm);
+    }
 }
 
 double bisection(double  E_b, double  E_a)
@@ -278,7 +252,6 @@ double bisection(double  E_b, double  E_a)
 
 int main()
 {
-
     //This is the energy to start at
 	double E_start = -14.0;    
     
@@ -290,13 +263,13 @@ int main()
 
     //Open the data files for recording observables
     ofstream myfile_potential;
-    myfile_potential.open("data_potential.csv");
+    myfile_potential.open("data_potential_1_3.csv");
     
     ofstream myfile_phi;
-    myfile_phi.open("data_phi.csv");
+    myfile_phi.open("data_phi_1_3.csv");
   	
     ofstream myfile_FE;
-	myfile_FE.open("data_FE.csv");    
+	myfile_FE.open("data_FE_1_3.csv");    
 
     //Draw the potential for visualization purposes
     for (int i = 0; i <= N; i++)
@@ -304,16 +277,12 @@ int main()
         double x = x_left + i * h;
         myfile_potential << V(x) << '\n';
     }
-   
-	double temp_F_E, temp_F_symm;
 
     for (E = E_start; E <= E_stop; E = E + step_E)
     {
-        normalize();
-        temp_F_E = F(E);
-        temp_F_symm = F_symmmetry();
+        normalize(phi);
 
-        myfile_FE << E << "," << temp_F_E << "," << temp_F_symm << "\n";
+        myfile_FE << E << "," << F(E) << "\n";
     }
    
     /*
@@ -346,18 +315,14 @@ int main()
     E_max[6] = -7.6;    
     
     //Record all the wavefunctions in one file
-    
-    double sum = 0 ;
-    
+   
     for (int j = 0; j <= 6; j++)
     {
         //Use the bisection routine to determine the roots
         E = bisection(E_min[j], E_max[j]);
 
         //Normalize the wavefunctions
-        normalize();
- 
-        sum_check();
+        normalize(phi);
  
         for (int i = 0; i <= N; ++i)
         {
