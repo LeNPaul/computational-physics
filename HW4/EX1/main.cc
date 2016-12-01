@@ -15,13 +15,9 @@ double E;
 //Set the grid size
 int N = 10000;
 
-//Set the boundary sizes for 1.3
+//Set the boundary sizes for 1.3 and 1.6
 double x_left = -100; //Left boundary
 double x_right = 100; //Right boundary
-
-//Set the boundary sizes for 1.6
-//double x_left = 0; //Left boundary
-//double x_right = pi / 2; //Right boundary
 
 //Determine the step size
 double h = (x_right - x_left) / N;

@@ -4,9 +4,9 @@ FFLAGS=-O -std=c++11
 LFLAGS= 
 OBJECTFILES=main.o
 
-default: numerov
+default: laplace
 
-numerov: $(OBJECTFILES)
+laplace: $(OBJECTFILES)
 	echo "Compiling"; \
 	$(LINKER) $(LFLAGS) $(OBJECTFILES) -o $@
 
