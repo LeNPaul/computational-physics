@@ -160,14 +160,28 @@ private:
 
 	void LeapFrogStep(int part)
 	{
+        //This was needed        
+        double vmax, vmin; 
+        vector<double> v_h;     
+                
           if (part == 1) {
 	    for (vector<Atom>::iterator it = Particles.begin() ; it != Particles.end(); ++it) {
-               it->vel = it->vel+.....
-               it->r = it->r+.....
+               it->vel = it->vel+ 0.5*deltaT*it->acc;
+                //Start here for 1.6
+               it->r = it->r+ deltaT*it->vel; 
 	    }
           } else {
+
+
+	int cnt= 0 ; vmax= 0 ; vmin= 0 ; 
 	    for (vector<Atom>::iterator it = Particles.begin() ; it != Particles.end(); ++it) {
-               it->vel = it->vel+.......
+            //And here for 1.6   
+            it->vel = it->vel+ 0.5*deltaT*it->acc;
+	     v_h[cnt]= it->vel.VLen(); ++cnt; 
+
+		
+		if (v_h[cnt]>vmax) vmax= v_h[cnt]; 
+		if (v_h[cnt]<vmin) vmin= v_h[cnt]; 
 	    }
           }
  	}

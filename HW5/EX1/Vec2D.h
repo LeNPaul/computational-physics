@@ -25,10 +25,23 @@ public:
 
 	// Wrap
         void VWrap(const Vec<Type> region) {
- 	   if (x>= 0.5*region.x) {
-           //Start here for 1.4
-           x -= 0.5*region.x;
-           y -= 0.5*region.y;
+            //Start here for 1.4
+           if(x >= 0.5 * region.x) 
+           {
+               x -= region.x;
+           }
+           if(x <= -0.5 * region.x)
+           {
+               x += region.x;
+           }
+           if(y >= 0.5 * region.y) 
+           {
+               y -= region.y;
+           }
+           if(y <= -0.5 * region.y)
+           {
+               y += region.y;
+           }
         }
 
 
