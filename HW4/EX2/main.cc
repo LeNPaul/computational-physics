@@ -101,6 +101,9 @@ int main()
 
     int N_prime = 100;
     
+    //Set the grid spacing
+    double h = L / N;
+    
     for(i = 0; i < N; ++i)
     {
         for(j = 0; j < N; ++j)
