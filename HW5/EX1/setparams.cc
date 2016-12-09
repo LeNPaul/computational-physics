@@ -5,8 +5,8 @@
 void setparams(Params & mypars)
 {	mypars.initUcell.set_values(mypars.initUcellx,mypars.initUcelly);
         mypars.rCut = pow(2.0,1.0/6.0);
-     //Start here for 1.5
-	double s= 1 / sqrt(mypars.density); 
+    //Start here for 1.5
+	double s = 1 / sqrt(mypars.density); 
 	mypars.region.set_values(s*mypars.initUcellx,s*mypars.initUcelly);
 	mypars.nAtoms = mypars.initUcell.VProd();
         mypars.velMag = sqrt(NDIM*(1.0-1.0/mypars.nAtoms)*mypars.temperature);

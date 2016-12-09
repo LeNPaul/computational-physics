@@ -63,15 +63,29 @@ public:
 	  velMag     (myparams.velMag),      
           Particles(myparams.nAtoms) {
         }
- 
-	void Initialize()
+    
+    //Declare some public variables that will be used later to make priviate variables public
+    double vec_sum;
+    double Etot_Avrg;
+    double Etot_Err_Avrg; 
+    double Ekin_Avrg;
+    double Ekin_Err_Avrg; 
+    double Pressure_Avrg; 
+    double Pressure_Err_Avrg; 
+    //This was needed for 1.6
+    double vmax, vmin; 
+    vector<double> v_h;
+	
+    void Initialize()
 	{
-	  stepCount = 0;
+          //Need to also initialize the v_h for the leapfrog function
+          v_h.resize(nAtoms);
+          stepCount = 0;
           initcoords();
           InitVels();
           initaccells();
- 	}
-
+ 	}    
+    
 	void SingleStep()
 	{
 	  stepCount += 1;
@@ -96,15 +110,25 @@ private:
             cout << "  step  timeNow  Sum Vel       E +-Std_Err(E)           Ekin +- Std_Err(Ekin)     P +- Std_Err(P)"<< endl;
             firstcall=false;
           }
+     
+     //Setting the private variables to public ones so they can be called in the main file
+     vec_sum =  fabs(vSum.VCsum()/nAtoms); 
+     Etot_Avrg =  Etot.Avrg(); 
+     Etot_Err_Avrg=Etot.Err_Avrg() ; 
+     Ekin_Avrg= Ekin.Avrg();
+     Ekin_Err_Avrg= Ekin.Err_Avrg(); 
+     Pressure_Avrg= Pressure.Avrg(); 
+     Pressure_Err_Avrg= Pressure.Err_Avrg(); 
+
           cout << fixed << setw(6) << stepCount << "  " << 
                   setw(6) << setprecision(5)  << timeNow   << "  " <<
-                  setw(6) << setprecision(5) << fabs(vSum.VCsum()/nAtoms) << "       " << 
-                  setw(6) << setprecision(5) << Etot.Avrg() << " +- " << 
-                  setw(6) << setprecision(5) << Etot.Err_Avrg() << "       " << 
-                  setw(6) << setprecision(5) << Ekin.Avrg() << " +- " << 
-                  setw(6) << setprecision(5) << Ekin.Err_Avrg() << "        " << 
-                  setw(6) << setprecision(5) << Pressure.Avrg() << " +- " << 
-                  setw(6) << setprecision(5) << Pressure.Err_Avrg() << endl;                 
+                  setw(6) << setprecision(5) << vec_sum << "       " << 
+                  setw(6) << setprecision(5) << Etot_Avrg << " +- " << 
+                  setw(6) << setprecision(5) << Etot_Err_Avrg << "       " << 
+                  setw(6) << setprecision(5) << Ekin_Avrg << " +- " << 
+                  setw(6) << setprecision(5) << Ekin_Err_Avrg << "        " << 
+                  setw(6) << setprecision(5) << Pressure_Avrg << " +- " << 
+                  setw(6) << setprecision(5) << Pressure_Err_Avrg << endl;           
  	}
 
 	void EvalVars()
@@ -160,10 +184,6 @@ private:
 
 	void LeapFrogStep(int part)
 	{
-        //This was needed        
-        double vmax, vmin; 
-        vector<double> v_h;     
-                
           if (part == 1) {
 	    for (vector<Atom>::iterator it = Particles.begin() ; it != Particles.end(); ++it) {
                it->vel = it->vel+ 0.5*deltaT*it->acc;
